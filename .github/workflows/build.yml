@@ -1,8 +1,6 @@
 name: Build job
 
-on:
-  workflow_call:
-
+on: workflow_dispatch
 env:
   POWERSHELL_TELEMETRY_OPTOUT: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
