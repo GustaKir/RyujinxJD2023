@@ -155,6 +155,8 @@ namespace Ryujinx.Graphics.GAL.Multithreading
             Register<TextureBarrierTiledCommand>(CommandType.TextureBarrierTiled);
             Register<TryHostConditionalRenderingCommand>(CommandType.TryHostConditionalRendering);
             Register<TryHostConditionalRenderingFlushCommand>(CommandType.TryHostConditionalRenderingFlush);
+            Register<UpdatePageTableGpuAddressCommand>(CommandType.UpdatePageTableGpuAddress);
+
 
             return maxCommandSize;
         }
