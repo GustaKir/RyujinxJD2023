@@ -386,5 +386,13 @@ namespace Ryujinx.Graphics.GAL.Multithreading
             _renderer.QueueCommand();
             return false;
         }
+
+        public void UpdatePageTableGpuAddress(ulong address)
+        {
+            _renderer.New<UpdatePageTableGpuAddressCommand>().Set(address);
+            _renderer.QueueCommand();
+        }
+
+        
     }
 }
