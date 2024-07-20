@@ -1516,6 +1516,14 @@ namespace Ryujinx.Graphics.OpenGL
             return (_boundDrawFramebuffer, _boundReadFramebuffer);
         }
 
+        public void UpdatePageTableGpuAddress(ulong address)
+        {
+            _supportBuffer.UpdatePageTableBasePointer(address);
+        }
+
+
+        
+
         private void PrepareForDispatch()
         {
             _unit0Texture?.Bind(0);
