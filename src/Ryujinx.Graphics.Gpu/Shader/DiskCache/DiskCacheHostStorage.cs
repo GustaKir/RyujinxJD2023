@@ -141,6 +141,16 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
             public ShaderStage Stage;
 
             /// <summary>
+            /// Indicates if the shader uses instructions that access global memory, such as LDG, STG and ATOM.
+            /// </summary>
+            public bool UsesGlobalMemory;
+
+            /// <summary>
+            /// Indicates if the shader uses instructions that modify global memory, such as STG and ATOM.
+            /// </summary>
+            public bool UsesGlobalMemoryWrite;
+
+            /// <summary>
             /// Number of vertices that each output primitive has on a geometry shader.
             /// </summary>
             public byte GeometryVerticesPerPrimitive;
@@ -799,6 +809,8 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
                 textures,
                 images,
                 dataInfo.Stage,
+                dataInfo.UsesGlobalMemory,
+                dataInfo.UsesGlobalMemoryWrite,
                 dataInfo.GeometryVerticesPerPrimitive,
                 dataInfo.GeometryMaxOutputVertices,
                 dataInfo.ThreadsPerInputPrimitive,
@@ -829,6 +841,8 @@ namespace Ryujinx.Graphics.Gpu.Shader.DiskCache
                 TexturesCount = (ushort)info.Textures.Count,
                 ImagesCount = (ushort)info.Images.Count,
                 Stage = info.Stage,
+                UsesGlobalMemory = info.UsesGlobalMemory;
+                UsesGlobalMemoryWrite = info.UsesGlobalMemoryWrite;
                 GeometryVerticesPerPrimitive = (byte)info.GeometryVerticesPerPrimitive,
                 GeometryMaxOutputVertices = (ushort)info.GeometryMaxOutputVertices,
                 ThreadsPerInputPrimitive = (ushort)info.ThreadsPerInputPrimitive,
