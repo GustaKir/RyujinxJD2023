@@ -61,6 +61,8 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
             Register<BufferDisposeCommand>(CommandType.BufferDispose);
             Register<BufferGetDataCommand>(CommandType.BufferGetData);
+            Register<BufferGetGpuAddressCommand>(CommandType.BufferGetGpuAddress);
+            
             Register<BufferSetDataCommand>(CommandType.BufferSetData);
 
             Register<CounterEventDisposeCommand>(CommandType.CounterEventDispose);
