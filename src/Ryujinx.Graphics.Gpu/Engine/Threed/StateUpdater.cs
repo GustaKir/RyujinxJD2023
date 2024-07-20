@@ -42,6 +42,9 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
         private readonly SpecializationStateUpdater _currentSpecState;
 
         private ProgramPipelineState _pipeline;
+        
+        private uint _globalMemoryUseMask;
+        private uint _globalMemoryWriteMask;
 
         private bool _fsReadsFragCoord;
         private bool _vsUsesDrawParameters;
@@ -341,7 +344,17 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
         {
             UpdateStorageBuffers();
 
+            bool usesGlobalMemory = _globalMemoryUseMask != 0;
+
+            if (usesGlobalMemory)
+            {
+                _channel.BufferManager.SynchronizeGraphicsStorageBuffers(_globalMemoryUseMask, _globalMemoryWriteMask);
+            }
+
             bool unalignedChanged = _currentSpecState.SetHasUnalignedStorageBuffer(_channel.BufferManager.HasUnalignedStorageBuffers);
+
+
+            
 
             bool scaleMismatch;
             do
@@ -361,7 +374,18 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
             while (scaleMismatch);
 
             _channel.BufferManager.CommitGraphicsBindings(_drawState.DrawIndexed);
+
+            if (usesGlobalMemory)
+            {
+                _channel.BufferManager.UpdatePageTable();
+            }
         }
+
+        
+
+
+
+        
 
         /// <summary>
         /// Updates storage buffer bindings.
@@ -1475,46 +1499,27 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
             }
 
             UpdateShaderBindings(gs.Bindings);
+            _globalMemoryUseMask = 0;
+            _globalMemoryWriteMask = 0;
 
             for (int stageIndex = 0; stageIndex < Constants.ShaderStages; stageIndex++)
             {
                 ShaderProgramInfo info = gs.Shaders[stageIndex + 1]?.Info;
 
-                if (info?.UsesRtLayer == true)
-                {
-                    _vtgWritesRtLayer = true;
-                }
-
                 _currentProgramInfo[stageIndex] = info;
-            }
 
-            if (gs.Shaders[5]?.Info.UsesFragCoord == true)
-            {
-                // Make sure we update the viewport size on the support buffer if it will be consumed on the new shader.
-
-                if (!_fsReadsFragCoord && _state.State.YControl.HasFlag(YControl.NegateY))
+                if (info != null)
                 {
-                    UpdateSupportBufferViewportSize();
+                    if (info.UsesGlobalMemory)
+                    {
+                        _globalMemoryUseMask |= 1u << stageIndex;
+                    }
+
+                    if (info.UsesGlobalMemoryWrite)
+                    {
+                        _globalMemoryWriteMask |= 1u << stageIndex;
+                    }
                 }
-
-                _fsReadsFragCoord = true;
-            }
-            else
-            {
-                _fsReadsFragCoord = false;
-            }
-
-            if (gs.VertexAsCompute != null)
-            {
-                _drawState.VertexAsCompute = gs.VertexAsCompute;
-                _drawState.GeometryAsCompute = gs.GeometryAsCompute;
-                _drawState.VertexPassthrough = gs.HostProgram;
-            }
-            else
-            {
-                _drawState.VertexAsCompute = null;
-                _drawState.GeometryAsCompute = null;
-                _drawState.VertexPassthrough = null;
             }
 
             _context.Renderer.Pipeline.SetProgram(gs.HostProgram);
