@@ -88,6 +88,23 @@ namespace Ryujinx.Graphics.Gpu.Memory
             MarkDirty(SupportBuffer.ViewportSizeOffset, SupportBuffer.FieldSize);
         }
 
+
+        public void UpdatePageTableBasePointer(ulong address)
+        {
+            uint addrLow = (uint)address;
+            uint addrHigh = (uint)(address >> 32);
+
+            if (Data.PageTableBasePointer.X != addrLow || Data.PageTableBasePointer.Y != addrHigh)
+            {
+                Data.PageTableBasePointer.X = addrLow;
+                Data.PageTableBasePointer.Y = addrHigh;
+
+                MarkDirty(SupportBuffer.PageTableBasePointerOffset, sizeof(ulong));
+            }
+        }
+
+        
+
         /// <summary>
         /// Sets the scale of all output render targets (they should all have the same scale).
         /// </summary>
