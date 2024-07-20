@@ -21,6 +21,7 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
         BufferDispose,
         BufferGetData,
+        BufferGetGpuAddress,
         BufferSetData,
 
         CounterEventDispose,
@@ -113,5 +114,6 @@ namespace Ryujinx.Graphics.GAL.Multithreading
         TextureBarrierTiled,
         TryHostConditionalRendering,
         TryHostConditionalRenderingFlush,
+        UpdatePageTableGpuAddress,
     }
 }
