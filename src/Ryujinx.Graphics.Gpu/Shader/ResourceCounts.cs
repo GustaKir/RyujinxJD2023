@@ -29,5 +29,10 @@ namespace Ryujinx.Graphics.Gpu.Shader
         /// Total of extra sets used by the shaders.
         /// </summary>
         public int SetsCount;
+
+        public ResourceCounts()
+        {
+            StorageBuffersCount = 1; // The first binding is reserved for the buffer mappings table for GPU address translation.
+        }
     }
 }
