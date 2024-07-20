@@ -895,6 +895,13 @@ namespace Ryujinx.Graphics.Gpu.Memory
             }
         }
 
+        public ulong GetBufferHostGpuAddress(ulong address, ulong size, bool write = false)
+        {
+            return GetBuffer(address, size, write).GetHostGpuAddress(address);
+        }
+
+        
+
         /// <summary>
         /// Gets a buffer for a given memory range.
         /// A buffer overlapping with the specified range is assumed to already exist on the cache.
@@ -1003,21 +1010,20 @@ namespace Ryujinx.Graphics.Gpu.Memory
         /// <param name="size">Size in bytes of the memory range</param>
         /// <param name="copyBackVirtual">Whether virtual buffers that uses this buffer as backing memory should have its data copied back if modified</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SynchronizeBufferRange(ulong address, ulong size, bool copyBackVirtual)
+        public void SynchronizeBufferRange(ulong address, ulong size, bool write = false)
         {
             if (size != 0)
             {
                 Buffer buffer = _buffers.FindFirstOverlap(address, size);
 
-                if (copyBackVirtual)
-                {
-                    buffer.CopyFromDependantVirtualBuffers();
-                }
-
                 buffer.SynchronizeMemory(address, size);
+
+                if (write)
+                {
+                    buffer.SignalModified(address, size);
+                }
             }
         }
-
         /// <summary>
         /// Signal that the given buffer's handle has changed,
         /// forcing rebind and any overlapping multi-range buffers to be recreated.
